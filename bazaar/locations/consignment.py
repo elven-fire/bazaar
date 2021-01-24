@@ -74,6 +74,7 @@ def consign_sell(IQ, items, modifier):
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
     sales_total = 0
+    open_offers = [NoOffer(item) for item in items]
     for day in days:
         if not items:
             break
@@ -87,11 +88,22 @@ def consign_sell(IQ, items, modifier):
         print("Attempting to sell", len(items), "items")
         if (sales_total): print("Earned so far: $%d" % sales_total)
 
-        # Print today's offers
+        # Try to keep yesterday's offers alive
+        open_offers = [
+            offer if (offer and roll_vs_IQ(offer.difficulty, IQ)) else NoOffer(offer.item)
+            for offer in open_offers]
+
+        # Print and save today's best offers
         print("\nOffers available today:")
-        offers = consign_items(IQ, items, modifier)
-        for offer in reversed(offers):
-            print(offer)
+        for i in reversed(range(len(items))):
+            offer = consign_item(IQ, items[i], modifier)
+            if (offer and int(offer) >= int(open_offers[i])):
+                open_offers[i] = offer
+                print(open_offers[i])
+            elif (open_offers[i]):
+                print(open_offers[i], "* (existing offer)")
+            else:
+                print(open_offers[i]) # NoOffer
 
         # Process bulk offer response
         response = player_menu("", {
@@ -101,16 +113,16 @@ def consign_sell(IQ, items, modifier):
             'q': "quit the marketplace"})
         
         if response == "accept all":
-            for i in reversed(range(len(offers))):
-                if offers[i]:
+            for i in reversed(range(len(open_offers))):
+                if open_offers[i]:
                     items.pop(i)
-                    sales_total += int(offers[i])
+                    sales_total += int(open_offers[i])
         elif response == "decline all":
             pass
         elif response == "quit the marketplace":
             break
         elif response == "some of each":
-            sales_total += iterate_offers(items, offers)
+            sales_total += iterate_offers(items, open_offers)
         else:
             raise BazaarError("Invalid offer response selected")
 
