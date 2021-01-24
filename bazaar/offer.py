@@ -49,3 +49,9 @@ class Offer:
 def NoOffer(item):
     """Convenience function to retrieve a None Offer."""
     return Offer(item, None)
+
+def OfferByPercent(item, percent, modifier=None, difficulty=None):
+    """Convenience function to convert a percent of value to an Offer."""
+    if not modifier: modifier = 0
+    offer = round((percent / 100) * item.value * (1 + (modifier / 100)))
+    return Offer(item, offer, difficulty)

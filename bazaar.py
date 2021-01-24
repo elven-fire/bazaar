@@ -48,7 +48,7 @@ def main(args):
         raise BazaarError("No sales location determined")
     
     print("\nThanks for visiting the bazaar!")
-    if (sales_total): print("You earned: $", sales_total)
+    if (sales_total): print("You earned: $%d" % sales_total)
     if (items):
         print("You have", len(items), "items left unsold:")
         for item in items:

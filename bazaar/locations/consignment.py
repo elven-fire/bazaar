@@ -1,14 +1,14 @@
 from bazaar import roll_vs_IQ, get_percent, player_menu
-from bazaar.offer import Offer, NoOffer
+from bazaar.offer import Offer, NoOffer, OfferByPercent
 
-def find_best_percent_at(dice, IQ):
+def find_best_offer_at(dice, IQ, item, modifier):
 
     """Return the best available offer at a given die roll.
 
     Additional attempts continue until either the character misses the
     roll against IQ, or the offer found is lower than the last.
     
-    Return a percent integer [1-100], or None for no offer.
+    Return an Offer object with the best offer at this difficulty.
     """
     bestpercent = 0
     while roll_vs_IQ(dice, IQ):
@@ -16,26 +16,9 @@ def find_best_percent_at(dice, IQ):
         if (percent >= bestpercent):
             bestpercent = percent
         else: break
-    return bestpercent or None
-
-def find_best_percent(IQ):
-
-    """Return the best available multiplier today.
-    
-    IQ - character's adjusted IQ to roll against
-    
-    Return a percent integer [1-100], or None for no offer.
-    """
-
-    bestpercent = 0
-    dice = 3
-    while True:
-        percent = find_best_percent_at(dice, IQ)
-        if not percent: break
-        if percent > bestpercent:
-            bestpercent = percent
-        dice += 1
-    return bestpercent or None
+    if bestpercent:
+        return OfferByPercent(item, percent, modifier, dice)
+    return NoOffer(item)
 
 
 def consign_item(IQ, item, modifier):
@@ -46,18 +29,24 @@ def consign_item(IQ, item, modifier):
     item - the Item to be sold
     modifier - modifier to apply, if any (e.g. 25 for +25%)
     
-    Return the best offer, in silver, or None for no offer.
+    Return an Offer object with the best offer for the day.
     """
 
-    percent = find_best_percent(IQ)
-    if not percent: return NoOffer(item)
-    if not modifier: modifier = 0
-    return Offer(item, round((percent / 100) * item.value * (1 + (modifier / 100))))
+    bestoffer = NoOffer(item)
+    dice = 3
+    while True:
+        offer = find_best_offer_at(dice, IQ, item, modifier)
+        if not offer: break
+        if int(offer) > int(bestoffer):
+            bestoffer = offer
+        dice += 1
+    return bestoffer
 
 
 def consign_items(IQ, items, modifier):
     """Determine the best available price for each item on one day."""
     return [consign_item(IQ, item, modifier) for item in items]
+
 
 def iterate_offers(items, offers):
     """Interactively consider each offer and accept or decline."""
@@ -96,7 +85,7 @@ def consign_sell(IQ, items, modifier):
         print('-' * (len(day) + 2))
         print()
         print("Attempting to sell", len(items), "items")
-        if (sales_total): print("Earned so far: $", sales_total)
+        if (sales_total): print("Earned so far: $%d" % sales_total)
 
         # Print today's offers
         print("\nOffers available today:")

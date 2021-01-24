@@ -74,3 +74,14 @@ class TestOffer(unittest.TestCase):
         self.assertEqual(o.item.value, 3000)
         self.assertIsNone(o.offer)
         self.assertFalse(o)
+
+    def test_offer_by_percent(self):
+        """Test convenience function to convert a percent into an offer."""
+        i = Item(10000)
+        self.assertEqual(int(OfferByPercent(i, 50)), 5000)
+        self.assertEqual(int(OfferByPercent(i, 50, modifier=10)), 5500)
+
+    def test_offer_by_percent_difficulty(self):
+        """Test difficulty is stored when converting a percent to an offer."""
+        o = OfferByPercent(Item(3000), 50, 10, 3)
+        self.assertEqual(o.difficulty, 3)
