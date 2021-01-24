@@ -8,15 +8,9 @@ def roll_vs_IQ(numdice, IQ):
     roll = sum([random.randint(1, 6) for i in range(numdice)])
     return roll <= IQ
 
-def get_offer(offerbase):
-    """Add a d20 to `offerbase` and return the offer."""
-    return offerbase + random.randint(1, 20)
-
-def format_offer(value, offer):
-    """Format item and offer into a readable string."""
-    if offer is None:
-        return "Item valued at $%d: no offer" % value
-    return "Item valued at $%d: offered $%d (%d%%)" % (value, offer, offer / value * 100)
+def get_percent(basepercent):
+    """Add a d20 to `basepercent` and return the offered percent of item value."""
+    return basepercent + random.randint(1, 20)
 
 def player_menu(prompt, options):
     """Display an interactive menu and solicit one of the given options.

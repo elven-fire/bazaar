@@ -1,9 +1,10 @@
 import argparse
 
 from bazaar import BazaarError
+from bazaar.offer import Item
 from bazaar.wizard import wizard_location, wizard_items
-from bazaar.consignment import consign_sell
-from bazaar.privatemarket import market_sell
+from bazaar.locations.consignment import consign_sell
+from bazaar.locations.privatemarket import market_sell
 
 VERSION = '0.1.0'
 
@@ -38,19 +39,20 @@ def main(args):
 
     # Continue to sell the items
     sales_total = 0
+    items = [Item(value) for value in args.itemvalues]
     if args.consignment:
-        sales_total += consign_sell(args.IQ, args.itemvalues, args.modifier)
+        sales_total += consign_sell(args.IQ, items, args.modifier)
     elif args.privatemarket:
-        sales_total += market_sell(args.IQ, args.itemvalues, args.modifier)
+        sales_total += market_sell(args.IQ, items, args.modifier)
     else:
         raise BazaarError("No sales location determined")
     
     print("\nThanks for visiting the bazaar!")
     if (sales_total): print("You earned: $", sales_total)
-    if (args.itemvalues):
-        print("You have", len(args.itemvalues), "items left unsold:")
-        for value in args.itemvalues:
-            print(" - Item valued at $%d" % value)
+    if (items):
+        print("You have", len(items), "items left unsold:")
+        for item in items:
+            print(" - %s" % item)
 
 
 if __name__ == '__main__':
