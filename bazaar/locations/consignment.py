@@ -32,6 +32,7 @@ class Consignment(_InteractiveSalesLocation):
                 self.open_offers[i] = offers[i]
                 print(self.open_offers[i])
             elif (self.open_offers[i]):
+                offers[i] = self.open_offers[i]
                 print(self.open_offers[i], "* (existing offer)")
             else:
                 print(self.open_offers[i]) # NoOffer
