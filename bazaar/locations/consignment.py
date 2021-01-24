@@ -1,5 +1,14 @@
-from bazaar import roll_vs_IQ, get_percent, player_menu
+import random
+
+from bazaar import roll_vs_IQ, player_menu, iterate_offers
 from bazaar.offer import Offer, NoOffer, OfferByPercent
+
+def get_percent(dice):
+    """Add a d20 to the base percent for the difficulty.
+    Return the offered percent of item value."""
+    basepercent = 10 + dice * 10
+    return basepercent + random.randint(1, 20)
+
 
 def find_best_offer_at(dice, IQ, item, modifier):
 
@@ -12,7 +21,7 @@ def find_best_offer_at(dice, IQ, item, modifier):
     """
     bestpercent = 0
     while roll_vs_IQ(dice, IQ):
-        percent = get_percent(dice * 10 + 10)
+        percent = get_percent(dice)
         if (percent >= bestpercent):
             bestpercent = percent
         else: break
@@ -48,21 +57,6 @@ def consign_items(IQ, items, modifier):
     return [consign_item(IQ, item, modifier) for item in items]
 
 
-def iterate_offers(items, offers):
-    """Interactively consider each offer and accept or decline."""
-    sales_total = 0
-    for i in reversed(range(len(items))):
-        if not offers[i]: continue
-        print()
-        response = player_menu(
-            offers[i],
-            {'a' : "accept", 'y' : "accept",
-             'd' : "decline", 'n' : "decline"})
-        if (response == "accept"):
-            items.pop(i)
-            sales_total += int(offers.pop(i))
-    return sales_total
-
 def consign_sell(IQ, items, modifier):
 
     """Offer interactive consignment over the course of one town week.
@@ -85,7 +79,7 @@ def consign_sell(IQ, items, modifier):
         print(day, ":")
         print('-' * (len(day) + 2))
         print()
-        print("Attempting to sell", len(items), "items")
+        print("Attempting to sell", len(items), "items by consignment.")
         if (sales_total): print("Earned so far: $%d" % sales_total)
 
         # Try to keep yesterday's offers alive

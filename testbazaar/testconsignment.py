@@ -4,6 +4,24 @@ import random
 from bazaar.offer import Item
 from bazaar.locations.consignment import *
 
+class TestGetPercent(unittest.TestCase):
+
+    def test_3vIQ(self):
+        """At this level, percent must always be 41-60."""
+        for i in range(1000):
+            self.assertTrue(41 <= get_percent(3) <= 60)
+
+    def test_4vIQ(self):
+        """At this level, percent must always be 51-70."""
+        for i in range(1000):
+            self.assertTrue(51 <= get_percent(4) <= 70)
+
+    def test_5vIQ(self):
+        """At this level, percent will always be 61-80."""
+        for i in range(1000):
+            self.assertTrue(61 <= get_percent(5) <= 80)
+
+
 class TestBestOfferAt(unittest.TestCase):
 
     def setUp(self):
