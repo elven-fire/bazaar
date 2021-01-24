@@ -29,18 +29,21 @@ def parse_args():
 
 
 def main(args):
+    print()
+    print("Welcome to the bazaar!")
+    print()
 
     # Prompt the user for sales location and/or items as needed
     if not (args.consignment or args.privatemarket):
         wizard_location(args)
     if not args.itemvalues:
         wizard_items(args)
+        if not args.itemvalues:
+            print("Come back when you have some items to sell!")
+            return 0
     items = [Item(value) for value in args.itemvalues]
 
     # Print summary of arguments
-    print()
-    print("Welcome to the bazaar!")
-    print()
     if args.modifier:
         print("Selling with an IQ of %d and a modifier of %d%%" % (args.IQ, args.modifier))
     else:

@@ -25,7 +25,10 @@ class PrivateMarket(_InteractiveSalesLocation):
         """Prompt the player before consuming another day."""
         if self.items and day != self.DAYS[-1]:
             print()
-            print("You still have %d items remaining to sell." % len(self.items))
+            if len(self.items) == 1:
+                print("You still have 1 more item to sell.")
+            else:
+                print("You still have %d items remaining to sell." % len(self.items))
             response = player_menu(
                 "Would you like to try again tomorrow, using another day?",
                 {'y': "yes", 'n': "no"})
